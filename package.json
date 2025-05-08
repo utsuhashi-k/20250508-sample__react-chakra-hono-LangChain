@@ -1,9 +1,10 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "20250508-sample__vite-react-chakra",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
