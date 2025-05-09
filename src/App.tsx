@@ -14,7 +14,7 @@ export function App() {
 function Page() {
   return (
     <Center flexDir="column" gap="8" minH="dvh">
-      <HStack>
+      <HStack mt={10} gap={10}>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -22,11 +22,11 @@ function Page() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </HStack>
-      <HStack>
+      <HStack mt={10} gap={10}>
         <Button>Click me</Button>
         <Button>Click me</Button>
       </HStack>
-      <VStack>
+      <HStack mt={10} gap={10}>
         <Button colorScheme="teal" size="lg">
           Large Button
         </Button>
@@ -38,7 +38,7 @@ function Page() {
         <Button colorScheme="yellow" onClick={() => alert("Button clicked!")}>
           Alert Button
         </Button>
-      </VStack>
+      </HStack>
     </Center>
   )
 }
