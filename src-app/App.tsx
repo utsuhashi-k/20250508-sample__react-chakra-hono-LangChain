@@ -1,5 +1,5 @@
 import reactLogo from "./assets/react.svg"
-import { Button, Center, HStack, VStack } from "@chakra-ui/react"
+import * as C from "@chakra-ui/react"
 import viteLogo from "/vite.svg"
 import { Provider } from "./components/ui/provider"
 
@@ -13,32 +13,32 @@ export function App() {
 
 function Page() {
   return (
-    <Center flexDir="column" gap="8" minH="dvh">
-      <HStack mt={10} gap={10}>
+    <C.Center flexDir="column" gap="8" minH="dvh">
+      <C.HStack mt={10} gap={10}>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
-      </HStack>
-      <HStack mt={10} gap={10}>
-        <Button>Click me</Button>
-        <Button>Click me</Button>
-      </HStack>
-      <HStack mt={10} gap={10}>
-        <Button colorScheme="teal" size="lg">
+      </C.HStack>
+      <C.HStack mt={10} gap={10}>
+        <C.Button>Click me</C.Button>
+        <C.Button>Click me</C.Button>
+      </C.HStack>
+      <C.HStack mt={10} gap={10}>
+        <C.Button colorScheme="teal" size="lg">
           Large Button
-        </Button>
-        <Button colorScheme="pink" variant="outline">
+        </C.Button>
+        <C.Button colorScheme="pink" variant="outline">
           Outline Button
-        </Button>
-        <Button colorScheme="blue">Loading Button</Button>
-        <Button colorScheme="red">Disabled Button</Button>
-        <Button colorScheme="yellow" onClick={() => alert("Button clicked!")}>
+        </C.Button>
+        <C.Button colorScheme="blue">Loading Button</C.Button>
+        <C.Button colorScheme="red">Disabled Button</C.Button>
+        <C.Button colorScheme="yellow" onClick={() => alert("Button clicked!")}>
           Alert Button
-        </Button>
-      </HStack>
-    </Center>
+        </C.Button>
+      </C.HStack>
+    </C.Center>
   )
 }
