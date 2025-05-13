@@ -1,5 +1,12 @@
 # 20250508-sample\_\_vite-react-chakra
 
+`.env.local`に以下を設定する必要あり
+
+```
+OPENAI_API_KEY="your key"
+
+```
+
 以下テンプレ
 
 ---
