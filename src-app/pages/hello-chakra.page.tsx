@@ -2,7 +2,7 @@ import reactLogo from "./assets/react.svg"
 import * as C from "@chakra-ui/react"
 import viteLogo from "/vite.svg"
 
-export function OldPage() {
+export default function Page() {
   return (
     <C.Center flexDir="column" gap="8" minH="dvh">
       <C.HStack mt={10} gap={10}>
