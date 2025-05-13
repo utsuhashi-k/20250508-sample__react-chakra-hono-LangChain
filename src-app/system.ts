@@ -54,7 +54,6 @@ export const system = createSystem(
 )
 */
 
-
 if (typeof process !== "undefined" && process.versions?.node) {
   const fs = require("node:fs")
   fs.writeFileSync(`${__dirname}/xxx.config.json`, JSON.stringify(system, null, 2), {

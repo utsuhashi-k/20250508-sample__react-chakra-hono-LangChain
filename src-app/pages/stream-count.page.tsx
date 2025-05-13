@@ -1,15 +1,12 @@
 import * as C from "@chakra-ui/react"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Provider } from "./components/ui/provider"
 
-// /stream-sample/countを受信する結果を実装
 export default function Page() {
   const [count, setCount] = useState<number | null>(null)
   const [counts, setCounts] = useState<number[]>([])
   const [isConnected, setIsConnected] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  // ストリーミング接続を開始する関数
   const startConnection = useCallback(() => {
     if (isConnected) return
     ;(async () => {
@@ -48,20 +45,18 @@ export default function Page() {
                 break
               }
 
-              // デコードして既存のバッファに追加
               buffer += decoder.decode(value, { stream: true })
 
-              // イベントの処理
               const lines = buffer.split("\n\n")
-              buffer = lines.pop() || "" // 最後の不完全な部分を新しいバッファに
+              buffer = lines.pop() || ""
 
               for (const line of lines) {
                 if (line.startsWith("event: count")) {
-                  const dataLine = line.split("\n").find(l => l.startsWith("data: "))
+                  const dataLine = line.split("\n").find((l) => l.startsWith("data: "))
                   if (dataLine) {
                     const newCount = parseInt(dataLine.substring(6), 10)
                     setCount(newCount)
-                    setCounts(prev => [...prev, newCount])
+                    setCounts((prev) => [...prev, newCount])
                   }
                 }
               }
@@ -83,7 +78,6 @@ export default function Page() {
     })()
   }, [isConnected])
 
-  // ストリーミング接続を停止する関数
   const stopConnection = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
@@ -92,7 +86,6 @@ export default function Page() {
     }
   }, [])
 
-  // コンポーネントのアンマウント時に接続を閉じる
   useEffect(() => {
     return () => {
       if (abortControllerRef.current) {
@@ -122,7 +115,15 @@ export default function Page() {
         <C.Text>接続状態: {isConnected ? "接続中" : "未接続"}</C.Text>
       </C.Box>
 
-      <C.Box w="100%" maxW="600px" maxH="300px" overflowY="auto" borderWidth="1px" borderRadius="md" p="4">
+      <C.Box
+        w="100%"
+        maxW="600px"
+        maxH="300px"
+        overflowY="auto"
+        borderWidth="1px"
+        borderRadius="md"
+        p="4"
+      >
         <C.Text mb="2" fontWeight="bold">
           受信したカウント:
         </C.Text>
