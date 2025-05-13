@@ -95,26 +95,22 @@ const app = new Hono()
         await sendJsonStream({ type: "loading", description: "読み込み中..." })
         await sleep(1000)
 
-        {
-          /* TODO: #dev 消す */ console.log(prompt)
-          // LangChainjs+OpenAIを使用してストリーミングレスポンスを実装
-          const model = new ChatOpenAI({
-            openAIApiKey: process.env.OPENAI_API_KEY,
-            modelName: "gpt-3.5-turbo",
-            streaming: true,
-          })
-          /* TODO: #dev 消す */ console.log(model)
-          // ストリーミングコールバックを設定
-          await model.invoke([{ role: "user", content: prompt }], {
-            callbacks: [
-              {
-                handleLLMNewToken(token: string) {
-                  sendJsonStream({ type: "read-text", text: token })
-                },
+        const model = new ChatOpenAI({
+          openAIApiKey: process.env.OPENAI_API_KEY,
+          modelName: "gpt-3.5-turbo",
+          streaming: true,
+        })
+
+        await model.invoke([{ role: "user", content: prompt }], {
+          callbacks: [
+            {
+              handleLLMNewToken(token: string) {
+                sendJsonStream({ type: "read-text", text: token })
               },
-            ],
-          })
-        }
+            },
+          ],
+        })
+
         await stream.close()
       })
   )

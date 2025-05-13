@@ -38,16 +38,21 @@ export default function Page() {
       }
 
       setIsConnected(true)
-      const stream = response.body.pipeThrough(new TextDecoderStream()).pipeThrough(
-        new TransformStream< string , string >({
-          transform(chunk, controller) {
-            for (const jsonText of chunk.split("\n")) {
-              controller.enqueue(jsonText)
-            }
-            controller.terminate()
-          },
-        })
-      )
+      const stream = response.body
+        // blobをstringに変換
+        .pipeThrough(new TextDecoderStream())
+        // 2つ連続で改行されたjsonが来る可能性があるため、1つのjsonを取得するようにする
+        .pipeThrough(
+          new TransformStream<string, string>({
+            transform(chunk, controller) {
+              for (const jsonText of chunk.split("\n")) {
+                if (jsonText.trim()) {
+                  controller.enqueue(jsonText)
+                }
+              }
+            },
+          })
+        )
 
       try {
         for await (const line of streamToAsyncIterable(stream)) {
