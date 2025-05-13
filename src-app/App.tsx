@@ -1,6 +1,5 @@
-import * as C from "@chakra-ui/react"
-import { useCallback, useEffect, useRef, useState } from "react"
 import { Provider } from "./components/ui/provider"
+import Page from "./pages/stream-markdown/page"
 
 export function App() {
   return (
@@ -9,6 +8,3 @@ export function App() {
     </Provider>
   )
 }
-
-// stream-read-file-sample/text を受信する結果を実装 // TODO: stream-read-file-sample/text用に実装する
-function Page() {}
