@@ -8,9 +8,12 @@
     "dev": "run-p *:dev",
     "app:dev": "vite dev",
     "server:dev": "tsx watch src-server/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "format": "biome format --write .",
+    "format:check": "biome format ."
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@chakra-ui/react": "^3.17.0",
     "@emotion/react": "^11.14.0",
     "@eslint/js": "^9.25.0",
@@ -29,6 +32,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
+    "react-router": "^7.6.0",
+    "react-router-dom": "^7.6.0",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
