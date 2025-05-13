@@ -1,5 +1,5 @@
 import * as C from "@chakra-ui/react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Provider } from "./components/ui/provider"
 
 export function App() {
@@ -15,64 +15,99 @@ function Page() {
   const [count, setCount] = useState<number | null>(null)
   const [counts, setCounts] = useState<number[]>([])
   const [isConnected, setIsConnected] = useState(false)
-  const [eventSource, setEventSource] = useState<EventSource | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  // SSE接続を開始する関数
+  // ストリーミング接続を開始する関数
   const startConnection = useCallback(() => {
     if (isConnected) return
+    ;(async () => {
+      try {
+        const controller = new AbortController()
+        abortControllerRef.current = controller
 
-    const url = "http://localhost:3000/stream-sample/count"
+        const url = "http://localhost:3000/stream-sample/count"
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            Accept: "text/event-stream",
+          },
+        })
 
-    // POSTリクエストを送信してSSEストリームを開始
-    // fetch(url, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // })
-    //   .then(() => {
-    // EventSourceを作成して接続
-    const es = new EventSource(url)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
 
-    // countイベントを受信したときの処理
-    es.addEventListener("count", event => {
-      const newCount = parseInt(event.data, 10)
-      setCount(newCount)
-      setCounts(prev => [...prev, newCount])
-    })
+        if (!response.body) {
+          throw new Error("ReadableStream not supported in this browser.")
+        }
+        setIsConnected(true)
 
-    // エラー発生時の処理
-    es.onerror = () => {
-      es.close()
-      setIsConnected(false)
-      setEventSource(null)
-    }
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ""
 
-    setEventSource(es)
-    setIsConnected(true)
-    // })
-    // .catch(error => {
-    //   console.error("接続エラー:", error)
-    // })
+        const processStream = async () => {
+          try {
+            while (true) {
+              const { done, value } = await reader.read()
+
+              if (done) {
+                setIsConnected(false)
+                break
+              }
+
+              // デコードして既存のバッファに追加
+              buffer += decoder.decode(value, { stream: true })
+
+              // イベントの処理
+              const lines = buffer.split("\n\n")
+              buffer = lines.pop() || "" // 最後の不完全な部分を新しいバッファに
+
+              for (const line of lines) {
+                if (line.startsWith("event: count")) {
+                  const dataLine = line.split("\n").find(l => l.startsWith("data: "))
+                  if (dataLine) {
+                    const newCount = parseInt(dataLine.substring(6), 10)
+                    setCount(newCount)
+                    setCounts(prev => [...prev, newCount])
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            if (!(err instanceof DOMException && err.name === "AbortError")) {
+              console.error("ストリーム処理エラー:", err)
+            }
+            setIsConnected(false)
+          }
+        }
+
+        processStream()
+      } catch (error) {
+        console.error("接続エラー:", error)
+        setIsConnected(false)
+        abortControllerRef.current = null
+      }
+    })()
   }, [isConnected])
 
-  // SSE接続を停止する関数
+  // ストリーミング接続を停止する関数
   const stopConnection = useCallback(() => {
-    if (eventSource) {
-      eventSource.close()
-      setEventSource(null)
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
       setIsConnected(false)
     }
-  }, [eventSource])
+  }, [])
 
   // コンポーネントのアンマウント時に接続を閉じる
   useEffect(() => {
     return () => {
-      if (eventSource) {
-        eventSource.close()
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
       }
     }
-  }, [eventSource])
+  }, [])
 
   return (
     <C.Center flexDir="column" gap="4" minH="dvh" p="4">
