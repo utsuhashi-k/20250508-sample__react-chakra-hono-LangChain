@@ -16,7 +16,7 @@ export default function Page() {
       const controller = new AbortController()
       abortControllerRef.current = controller
 
-      const url = "http://localhost:3000/stream-markdown"
+      const url = "http://localhost:3000/stream-sample/markdown"
       const response = await fetch(url, {
         signal: controller.signal,
       })

@@ -21,10 +21,6 @@ const __dirname = dirname(__filename)
 dotenv.config({ path: resolve(__dirname, "..", ".env.local") })
 
 const app = new Hono()
-  .use(
-    "*",
-    cors({ origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"] })
-  )
   .get("/", (c) => {
     return c.text("Hello Hono!")
   })
@@ -44,7 +40,7 @@ const app = new Hono()
       await stream.close()
     })
   )
-  .get("/stream-markdown", (c) =>
+  .get("/stream-sample/markdown", (c) =>
     streamText(c, async (stream) => {
       type ___ =
         //
@@ -64,6 +60,29 @@ const app = new Hono()
       for (let i = 0; i < markdownText.length; i += 5) {
         const sliced = markdownText.slice(i, i + 5)
         await sendJsonStream({ type: "read-text", text: sliced })
+        await sleep(10)
+      }
+
+      await stream.close()
+    })
+  )
+  .post("/stream-sample/markdown-sse", (c) =>
+    streamSSE(c, async (stream) => {
+      // 読み込み中メッセージを送信
+      await stream.writeSSE({
+        data: "読み込み中...",
+        event: "loading",
+      })
+      await sleep(1000)
+
+      const markdownText = await readFile(`${__dirname}/long-text.md`, { encoding: "utf8" })
+
+      for (let i = 0; i < markdownText.length; i += 5) {
+        const sliced = markdownText.slice(i, i + 5)
+        await stream.writeSSE({
+          data: sliced,
+          event: "message",
+        })
         await sleep(10)
       }
 
@@ -114,6 +133,11 @@ const app = new Hono()
         await stream.close()
       })
   )
+
+app.use(
+  "*",
+  cors({ origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"] })
+)
 
 serve({ fetch: app.fetch, port: 3000 }, (info) => {
   console.log()
