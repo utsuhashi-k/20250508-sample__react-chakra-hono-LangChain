@@ -7,15 +7,8 @@ export default defineConfig({
   plugins: [
     react(),
     Pages({
-      dirs: [
-        {
-          filePattern: "**/*.page.tsx",
-          dir: "src-app/pages",
-          baseRoute: "",
-        },
-      ],
+      dirs: "src-app/pages",
       extensions: ["tsx"],
-      exclude: ["**/components/**/*"],
     }),
   ],
 })
