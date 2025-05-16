@@ -1,6 +1,6 @@
 # lefthook.yml
-pre-commit:
-  commands:
-    format:
-      glob: '*.{js,jsx,ts,tsx,json,css,md,html}'
-      run: pnpm run format
+# pre-commit:
+#   commands:
+#     format:
+#       glob: '*.{js,jsx,ts,tsx,json,css,md,html}'
+#       run: pnpm run format
