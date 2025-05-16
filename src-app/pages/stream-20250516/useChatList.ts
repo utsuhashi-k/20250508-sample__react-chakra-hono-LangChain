@@ -44,21 +44,21 @@ export function useChatList() {
       }
     }
 
+    // NOTE: チャットUIでは`whiteSpace="pre-wrap"`する都合上、逆順にする必要がある
+    //       つまり、`list[0]`が最新のitemになるようにしている
     setList(prevList => {
-      const lastItem = prevList[prevList.length - 1] as ChatItem | undefined
-      const isMatchType = lastItem && lastItem.type === type
+      const currentItem = prevList[0] as ChatItem | undefined
+      const isMatchType = currentItem && currentItem.type === type
 
       if (!isMatchType) {
         // typeが一致しなかった場合、新しいitemとして追加する
-        return [...prevList, callUpdater()]
+        return [callUpdater(), ...prevList]
       } else {
         // typeが一致した場合、最後のitemを差し替える
         if (prevList.length === 0) return prevList
 
         const updatedList = [...prevList]
-        const lastIndex = updatedList.length - 1
-        updatedList[lastIndex] = callUpdater(updatedList[lastIndex])
-
+        updatedList[0] = callUpdater(currentItem)
         return updatedList
       }
     })

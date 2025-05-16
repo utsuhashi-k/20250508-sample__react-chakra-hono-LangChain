@@ -39,7 +39,7 @@ export default function Page() {
         p="4"
         flexDir="column-reverse"
       >
-        {it.list.toReversed().map((item, index) => (
+        {it.list.map((item, index) => (
           <Fragment key={index}>
             {item.type === "message-user" && (
               <C.Flex justify="flex-end">
