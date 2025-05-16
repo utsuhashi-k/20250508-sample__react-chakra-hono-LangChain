@@ -5,7 +5,9 @@ import { system } from "../../system"
 export function Provider(props: ColorModeProviderProps) {
   return (
     <ChakraProvider value={system}>
-      <ColorModeProvider {...props} />
+      {/* <ColorModeProvider {...props}> */}
+      {props.children}
+      {/* </ColorModeProvider> */}
     </ChakraProvider>
   )
 }
