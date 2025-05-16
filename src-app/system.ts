@@ -33,7 +33,7 @@ const config = defineConfig({
  *   // ... (他に50以上の項目)
  * }
  */
-defaultConfig.theme!.tokens!.spacing = undefined
+// defaultConfig.theme!.tokens!.spacing = undefined
 
 export const system = createSystem(defaultConfig, config)
 
