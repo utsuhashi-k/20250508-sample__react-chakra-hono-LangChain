@@ -10,9 +10,10 @@ import { streamSSE, streamText } from "hono/streaming"
 import { zValidator } from "@hono/zod-validator"
 import { z } from "zod"
 import { ChatOpenAI } from "@langchain/openai"
-import { StringOutputParser } from "@langchain/core/output_parsers"
+import { type StreamJSONSchema } from "../common-schema"
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+import { sleep } from "./utils/time"
+import { chunkText } from "./utils/text"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -77,13 +78,39 @@ const app = new Hono()
 
       const markdownText = await readFile(`${__dirname}/long-text.md`, { encoding: "utf8" })
 
-      for (let i = 0; i < markdownText.length; i += 5) {
-        const sliced = markdownText.slice(i, i + 5)
+      for (const chunk of chunkText(markdownText, 5)) {
         await stream.writeSSE({
-          data: sliced,
+          data: chunk,
           event: "message",
         })
         await sleep(10)
+      }
+
+      await stream.close()
+    })
+  )
+  .get("/stream-sample/20250516", (c) =>
+    streamText(c, async (stream) => {
+      async function sendJsonStream(it: StreamJSONSchema) {
+        await stream.write(JSON.stringify(it) + "\n\n")
+      }
+
+      await sendJsonStream({ type: "loading-chat" })
+      await sleep(500)
+
+      const text = `解析した結果、3件のタスクを作成しました。`
+
+      for (const chunk of chunkText(text, 1)) {
+        await sendJsonStream({ type: "streaming-chat", chunk })
+        await sleep(50)
+      }
+
+      await sendJsonStream({ type: "loading-task" })
+      await sleep(1000)
+
+      for (let i = 1; i <= 3; i++) {
+        await sendJsonStream({ type: "read-task", task: { title: `タスク${i}` } })
+        await sleep(500)
       }
 
       await stream.close()
