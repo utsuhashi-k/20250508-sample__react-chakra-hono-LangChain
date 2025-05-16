@@ -28,6 +28,11 @@ export default function Page() {
               <C.Button colorScheme="purple">LangChainを用いたAIチャットサンプル</C.Button>
             </Link>
           </C.Box>
+          <C.Box as="li">
+            <Link to="/stream-20250516">
+              <C.Button colorScheme="green">ストリーミングタスク生成</C.Button>
+            </Link>
+          </C.Box>
         </C.Stack>
       </C.Stack>
     </C.Center>

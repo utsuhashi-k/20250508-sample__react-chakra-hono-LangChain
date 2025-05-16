@@ -1,85 +1,21 @@
 import * as C from "@chakra-ui/react"
-import { useEffect, useRef, useState } from "react"
-
-import { streamToAsyncIterable } from "../../streamToAsyncIterable"
+import { useStream } from "../../utils/stream"
 
 export default function Page() {
-  const [text, setText] = useState("")
-  const [isConnected, setIsConnected] = useState(false)
-  const abortControllerRef = useRef<AbortController | null>(null)
-
-  const startConnection = async () => {
-    if (isConnected) return
-    try {
-      setText("")
-
-      const controller = new AbortController()
-      abortControllerRef.current = controller
-
-      const url = "http://localhost:3000/stream-sample/markdown"
-      const response = await fetch(url, {
-        signal: controller.signal,
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      if (!response.body) {
-        throw new Error("ReadableStream not supported in this browser.")
-      }
-
-      setIsConnected(true)
-      const stream = response.body.pipeThrough(new TextDecoderStream())
-
-      for await (const line of streamToAsyncIterable(stream)) {
-        try {
-          const data = JSON.parse(line)
-
-          if (data.type === "read-text") {
-            setText((prev) => prev + data.text)
-          }
-        } catch (err) {
-          console.error("JSON解析エラー:", err, line)
-        }
-      }
-
-      setIsConnected(false)
-    } catch (error) {
-      console.error("接続エラー:", error)
-      setIsConnected(false)
-      abortControllerRef.current = null
-    }
-  }
-
-  // ストリーミング接続を停止する関数
-  const stopConnection = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort()
-      abortControllerRef.current = null
-      setIsConnected(false)
-    }
-  }
-
-  // コンポーネントのアンマウント時に接続を閉じる
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-    }
-  }, [])
+  const { text, isConnected, call, stop } = useStream({
+    url: "http://localhost:3000/stream-sample/markdown",
+  })
 
   return (
     <C.Center flexDir="column" gap="4" minH="dvh" p="4">
       <C.Heading size="lg">ファイル読み込みストリーミング</C.Heading>
 
       <C.HStack gap="4">
-        <C.Button colorScheme="teal" onClick={startConnection} disabled={isConnected}>
+        <C.Button colorScheme="teal" onClick={call} disabled={isConnected}>
           ファイル読み込み開始
         </C.Button>
 
-        <C.Button colorScheme="red" onClick={stopConnection} disabled={!isConnected}>
+        <C.Button colorScheme="red" onClick={stop} disabled={!isConnected}>
           読み込み停止
         </C.Button>
       </C.HStack>

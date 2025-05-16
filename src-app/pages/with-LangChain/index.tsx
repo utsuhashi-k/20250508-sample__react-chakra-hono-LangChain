@@ -45,11 +45,10 @@ export default function Page() {
         .pipeThrough(
           new TransformStream<string, string>({
             transform(chunk, controller) {
-              for (const jsonText of chunk.split("\n")) {
-                if (jsonText.trim()) {
-                  controller.enqueue(jsonText)
-                }
-              }
+              chunk
+                .split("\n")
+                .filter((jsonText) => jsonText.trim())
+                .forEach((jsonText) => controller.enqueue(jsonText))
             },
           })
         )
@@ -59,18 +58,16 @@ export default function Page() {
           try {
             if (line.trim() === "") continue
 
-            console.log("受信データ:", line)
             const data = JSON.parse(line)
-            console.log("パース後データ:", data)
 
             if (data.type === "loading") {
               setIsLoading(true)
             } else if (data.type === "read-text") {
               setIsLoading(false)
-              console.log("テキスト追加:", data.text)
+
               setText((prev) => {
                 const newText = prev + data.text
-                console.log("更新後テキスト:", newText)
+
                 return newText
               })
             }

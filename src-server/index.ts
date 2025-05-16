@@ -22,6 +22,10 @@ const __dirname = dirname(__filename)
 dotenv.config({ path: resolve(__dirname, "..", ".env.local") })
 
 const app = new Hono()
+  .use(
+    "*",
+    cors({ origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"] })
+  )
   .get("/", (c) => {
     return c.text("Hello Hono!")
   })
@@ -89,7 +93,7 @@ const app = new Hono()
       await stream.close()
     })
   )
-  .get("/stream-sample/20250516", (c) =>
+  .post("/stream-sample/20250516", (c) =>
     streamText(c, async (stream) => {
       async function sendJsonStream(it: StreamJSONSchema) {
         await stream.write(JSON.stringify(it) + "\n\n")
@@ -161,12 +165,4 @@ const app = new Hono()
       })
   )
 
-app.use(
-  "*",
-  cors({ origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"] })
-)
-
-serve({ fetch: app.fetch, port: 3000 }, (info) => {
-  console.log()
-  console.log(`Server is running on http://localhost:${info.port}`)
-})
+serve({ fetch: app.fetch, port: 3000 }, (info) => {})
