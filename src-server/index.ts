@@ -22,18 +22,15 @@ const __dirname = dirname(__filename)
 dotenv.config({ path: resolve(__dirname, "..", ".env.local") })
 
 const app = new Hono()
-  .use(
-    "*",
-    cors({ origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"] })
-  )
-  .get("/", (c) => {
+  .use("*", cors({ origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"] }))
+  .get("/", c => {
     return c.text("Hello Hono!")
   })
-  .post("/hello", (c) => {
+  .post("/hello", c => {
     return c.json({ hello: "world" })
   })
-  .get("/stream-sample/count", (c) =>
-    streamSSE(c, async (stream) => {
+  .get("/stream-sample/count", c =>
+    streamSSE(c, async stream => {
       for (let i = 1; i <= 20; i++) {
         await stream.writeSSE({
           data: String(i),
@@ -43,10 +40,10 @@ const app = new Hono()
         await sleep(100)
       }
       await stream.close()
-    })
+    }),
   )
-  .get("/stream-sample/markdown", (c) =>
-    streamText(c, async (stream) => {
+  .get("/stream-sample/markdown", c =>
+    streamText(c, async stream => {
       type ___ =
         //
         | { type: "loading"; description: string }
@@ -69,10 +66,10 @@ const app = new Hono()
       }
 
       await stream.close()
-    })
+    }),
   )
-  .post("/stream-sample/markdown-sse", (c) =>
-    streamSSE(c, async (stream) => {
+  .post("/stream-sample/markdown-sse", c =>
+    streamSSE(c, async stream => {
       // 読み込み中メッセージを送信
       await stream.writeSSE({
         data: "読み込み中...",
@@ -91,7 +88,7 @@ const app = new Hono()
       }
 
       await stream.close()
-    })
+    }),
   )
   .post("/stream-sample/20250516", (c) =>
     streamText(c, async (stream) => {
@@ -118,7 +115,7 @@ const app = new Hono()
       }
 
       await stream.close()
-    })
+    }),
   )
   .post(
     "/stream/lang-chain",
@@ -126,10 +123,10 @@ const app = new Hono()
       "json",
       z.object({
         prompt: z.string(),
-      })
+      }),
     ),
-    (c) =>
-      streamText(c, async (stream) => {
+    c =>
+      streamText(c, async stream => {
         const { prompt } = c.req.valid("json")
 
         type ___ =
@@ -162,7 +159,7 @@ const app = new Hono()
         })
 
         await stream.close()
-      })
+      }),
   )
 
-serve({ fetch: app.fetch, port: 3000 }, (info) => {})
+serve({ fetch: app.fetch, port: 3000 }, info => {})
