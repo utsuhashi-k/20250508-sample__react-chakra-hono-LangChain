@@ -12,7 +12,7 @@ export const StreamJSONSchema = v.variant("type", [
     type: v.literal("loading-task"),
   }),
   v.object({
-    type: v.literal("read-task"),
+    type: v.literal("add-task"),
     task: v.object({
       title: v.string(),
     }),

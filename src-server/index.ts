@@ -90,28 +90,36 @@ const app = new Hono()
       await stream.close()
     }),
   )
-  .post("/stream-sample/20250516", (c) =>
-    streamText(c, async (stream) => {
+  .post("/stream-sample/20250516", c =>
+    streamText(c, async stream => {
       async function sendJsonStream(it: StreamJSONSchema) {
         await stream.write(JSON.stringify(it) + "\n\n")
       }
 
       await sendJsonStream({ type: "loading-chat" })
-      await sleep(500)
+      await sleep(3000)
 
-      const text = `解析した結果、3件のタスクを作成しました。`
-
-      for (const chunk of chunkText(text, 1)) {
-        await sendJsonStream({ type: "streaming-chat", chunk })
-        await sleep(50)
+      {
+        const text = `指定されたテキストから、タスクを作成します。`
+        for (const chunk of chunkText(text, 1)) {
+          await sendJsonStream({ type: "streaming-chat", chunk })
+          await sleep(50)
+        }
       }
 
-      await sendJsonStream({ type: "loading-task" })
-      await sleep(1000)
-
       for (let i = 1; i <= 3; i++) {
-        await sendJsonStream({ type: "read-task", task: { title: `タスク${i}` } })
-        await sleep(500)
+        await sendJsonStream({ type: "loading-task" })
+        await sleep(1000)
+
+        await sendJsonStream({ type: "add-task", task: { title: `タスク${i}` } })
+      }
+
+      {
+        const text = `解析した結果、3件のタスクを作成しました。`
+        for (const chunk of chunkText(text, 1)) {
+          await sendJsonStream({ type: "streaming-chat", chunk })
+          await sleep(50)
+        }
       }
 
       await stream.close()
