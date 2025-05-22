@@ -3,10 +3,11 @@ import { streamToAsyncIterable } from "../../streamToAsyncIterable"
 import * as v from "valibot"
 import { StreamJSONSchema } from "../../../common-schema"
 import { useChatList } from "./useChatList"
+import ky from "ky"
 
 type Option = {
   url: string
-  fetchOption: Omit<RequestInit, "signal">
+  // fetchOption: Omit<RequestInit, "signal">
 }
 
 /**
@@ -25,7 +26,7 @@ export function useCustomStream(option: Option) {
   }
 
   // ストリーミング接続を開始する関数
-  const call = async ({ message,  }: CallOption) => {
+  const call = async ({ message }: CallOption) => {
     if (isConnected) return
     setIsConnected(true)
 
@@ -38,15 +39,9 @@ export function useCustomStream(option: Option) {
     abortControllerRef.current = controller
 
     try {
-      const response = await fetch(option.url, {
+      const response = await ky.post(option.url, {
         signal: controller.signal,
-        ...option.fetchOption,
       })
-
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
 
       if (!response.body) {
         throw new Error("ReadableStream not supported in this browser.")

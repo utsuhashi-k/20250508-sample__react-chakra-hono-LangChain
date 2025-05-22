@@ -20,6 +20,9 @@ importers:
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
+      ky:
+        specifier: ^1.8.1
+        version: 1.8.1
       langchain:
         specifier: ^0.3.24
         version: 0.3.24(@langchain/core@0.3.55(openai@4.98.0(zod@3.24.4)))(openai@4.98.0(zod@3.24.4))
@@ -1527,6 +1530,10 @@ packages:
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
+
+  ky@1.8.1:
+    resolution: {integrity: sha512-7Bp3TpsE+L+TARSnnDpk3xg8Idi8RwSLdj6CMbNWoOARIrGrbuLGusV0dYwbZOm4bB3jHNxSw8Wk/ByDqJEnDw==}
+    engines: {node: '>=18'}
 
   langchain@0.3.24:
     resolution: {integrity: sha512-BTjiYkUCpWFAmufK8J5zMqc5aUs4eEnAXPWtPe2+R4ZPP+U7bXJSBHAcrB40rQ3VeTdRgMvgDjekOOgCMWut6Q==}
@@ -4003,6 +4010,8 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
+
+  ky@1.8.1: {}
 
   langchain@0.3.24(@langchain/core@0.3.55(openai@4.98.0(zod@3.24.4)))(openai@4.98.0(zod@3.24.4)):
     dependencies:

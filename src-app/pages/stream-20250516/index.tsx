@@ -7,9 +7,6 @@ import { useRef } from "react"
 export default function Page() {
   const it = useCustomStream({
     url: "http://localhost:3000/stream-sample/20250516",
-    fetchOption: {
-      method: "POST",
-    },
   })
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -59,10 +56,23 @@ export default function Page() {
             )}
             {item.type === "message-ai" && (
               <C.Flex justify="flex-start">
-                <C.Box w="70%" whiteSpace="pre-wrap">
-                  {item.isLoading && <C.SkeletonText noOfLines={1} />}
-                  {item.message}
-                </C.Box>
+                {item.isLoading && <C.SkeletonText noOfLines={1} />}
+
+                {!item.isLoading && (
+                  // <C.Box w="70%" whiteSpace="pre-wrap">
+                  <C.Box
+                    // bg="blue.500"
+                    // color="white"
+                    py={2}
+                    px={4}
+                    borderRadius="lg"
+                    maxW="70%"
+                    boxShadow="md"
+                    whiteSpace="pre-wrap"
+                  >
+                    {item.message}
+                  </C.Box>
+                )}
               </C.Flex>
             )}
             {item.type === "task" && (
